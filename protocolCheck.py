@@ -14,6 +14,11 @@ TelnetList = {
     "WILL (251) Linemode": ["Won’t (252) Linemode", "MTPot"]
 }
 
+S7List = {
+    0x0011: ["6ES7 315-2EH14-0AB0", "Conpot"],
+    0x001C: ["Technodrome", "88111222", "Mouser Factory", "Conpot"]
+}
+
 def ModbusRequest(ip, port):
     success = True
     client = ModbusTcpClient(ip, port=port)
@@ -29,15 +34,11 @@ def ModbusRequest(ip, port):
     return success
 
 def S7Request(ip, port, data):
-    # It should return 0x32 if conpot
     client = snap7.client.Client()
-    try:
-        client.connect(ip, 0, 0)
-        data = client.read_szl(0x0011,1)
-    except:
-        pass
-    finally:
-        pass
+    client.connect(ip, 0, 0)
+    data = client.read_szl(data,1)
+    szl_data = bytearray(data.Data)
+    return szl_data
     
 
 
@@ -74,6 +75,13 @@ def checkModbus(ip, port):
     if (not ModbusRequest(ip, port)):
          print("Match: %s\t%s" % ("Conpot", "Disconected when Read Device Information"))
 
+def checkS7(ip, port):
+    for item in S7List:
+        res = S7Request(ip, port, item)
+        for i in range(0,len(S7List[item])-1):
+            if (S7List[item][i].encode() in res):
+                print("Match: %s\t%s" % (S7List[item][len(S7List[item])-1], S7List[item][i]))
+
 
 def checkSSH(ip, port):
     for item in SSHList:
@@ -92,5 +100,6 @@ def checkTelnet(ip, port):
 
 if __name__ == '__main__':
     # checkTelnet("127.0.0.1", 10001)
-    # S7Request("127.0.0.1", 102,"a")
-    checkModbus("127.0.0.1", 502)
+    #S7Request("127.0.0.1", 102,"a")
+    checkS7("5.196.14.176", 102)
+    #checkModbus("127.0.0.1", 502)

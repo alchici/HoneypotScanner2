@@ -1,6 +1,6 @@
 from portScanner import portScan
 from bannerCheck import checkBanner
-from protocolCheck import checkSSH, checkTelnet, checkModbus
+from protocolCheck import checkSSH, checkTelnet, checkModbus, checkS7
 from HTTPCheck import checkHTTP
 from TLSCheck import checkTLS
 
@@ -19,8 +19,8 @@ def scan(ip):
     stringProtocols = ""
 
     # EtherNetIP-1 por si ponen ssh en el puerto 2222
-    if ports["tcp"][2222]:
-        ports["tcp"][2222]["name"] = "ssh"
+    # if ports["tcp"][2222]:
+    #     ports["tcp"][2222]["name"] = "ssh"
 
 
     for port in ports["tcp"]:
@@ -46,6 +46,9 @@ def scan(ip):
     if "mbap" in testProtocols:
         checkModbus(ip,testProtocols["mbap"])
 
+    if "iso-tsap" in testProtocols:
+        checkS7(ip,testProtocols["iso-tsap"])
+
     #falta telnet y s7
 
     print("----------")
@@ -56,7 +59,7 @@ def scan(ip):
         checkHTTP(ip,testProtocols["http"])
     
     if "https" in testProtocols:
-        checkHTTP(ip,testProtocols["https"])
+        checkHTTP(ip,testProtocols["https"],True)
 
     print("----------")
 
@@ -70,4 +73,4 @@ def scan(ip):
 
 
 if __name__ == '__main__':
-    scan("127.0.0.1")
+    scan("5.196.14.176")

@@ -18,9 +18,17 @@ def stringifyHeaders(headers):
     return res    
 
 
-def checkHTTP(ip, port):
-    url1 = "http://%s/" % (ip)
-    url2 = "http://%s/index.html" % (ip)
+def checkHTTP(ip, port, https=False):
+
+    url1 = ""
+    url2 = ""
+
+    if https:
+        url1 = "https://%s:%s/" % (ip, port)
+        url2 = "https://%s:%s/index.html" % (ip, port)
+    else:
+        url1 = "http://%s:%s/" % (ip, port)
+        url2 = "http://%s:%s/index.html" % (ip, port)
 
     response1 = requests.get(url1)
     response2 = requests.get(url2)
